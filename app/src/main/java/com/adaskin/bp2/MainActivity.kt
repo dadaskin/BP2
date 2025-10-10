@@ -155,7 +155,6 @@ private fun clickHandler(context:Context, dateString:String, systolic:String, di
     // writeInfoToFile(context, dateString, systolic, diastolic)
 }
 
-
 private fun writeInfoToFile(context: Context, dateString:String, systolic:String, diastolic:String) {
     val msg = "$dateString  $systolic/$diastolic\n"
     val filename = "bpmeas3.txt"
