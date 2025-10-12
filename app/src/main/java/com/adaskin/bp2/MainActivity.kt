@@ -150,37 +150,28 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
 }
 
 private fun clickHandler(context:Context, dateString:String, systolic:String, diastolic:String) {
-    Toast.makeText(context, "In clickHandler()", Toast.LENGTH_LONG).show()
+  //  Toast.makeText(context, "In clickHandler()", Toast.LENGTH_LONG).show()
 
-    // writeInfoToFile(context, dateString, systolic, diastolic)
+    writeInfoToFile(context, dateString, systolic, diastolic)
 }
 
 private fun writeInfoToFile(context: Context, dateString:String, systolic:String, diastolic:String) {
     val msg = "$dateString  $systolic/$diastolic\n"
     val filename = "bpmeas3.txt"
-    val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-    Log.i("Foo", "Writing to: $documentsDir")
-    val file : File
     try {
-        file = File(documentsDir, filename)
-        try {
-            if (!file.exists()) {
-                Log.i("Foo", "File does not exist, try creating a new one.")
-                file.createNewFile()
-                Log.i("Foo", "Got past createNewFile()")
-            }
-        } catch (e:Exception) {
-            Log.i("Foo", "Exists() and Create(): " + e.message)
+        val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        Log.i("Foo", "Documents dir: $documentsDir")
+        val cacheDir = context.cacheDir
+        Log.i("Foo", "context.cacheDir is: " + cacheDir.name)
+        // Puts file in /data/data/com.adaskin.bp2/cache .
+        val file = File(cacheDir, filename)
+//        val file = File(documentsDir, filename)
+        if (!file.exists()) {
+            file.createNewFile()
         }
-        try {
-            Log.i("Foo", "Try to write some text to the file")
-            file.writeText(msg)
-            Log.i("Foo", "Got past the writeText().")
-        } catch (e:Exception) {
-            Log.i("Foo", "WriteText(): " + e.message)
-        }
+        file.appendText(msg, Charsets.UTF_8)
     } catch (e:Exception) {
-        Log.i("Foo", "Create File object" + e.message)
+        Log.i("Foo", "Some problem with file:\n" + e.message)
     }
 
     Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
