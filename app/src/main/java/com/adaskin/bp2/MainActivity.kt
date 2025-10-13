@@ -58,7 +58,8 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("SimpleDateFormat")
 private fun getNow():String {
-    val sdf = SimpleDateFormat( "dd-MMM-yy     HH:mm")
+    // "hh:mm a" gets 12 hr time format, "HH:mm" for 24-hour time format
+    val sdf = SimpleDateFormat( "dd-MMM-yy     hh:mm a")
     return sdf.format(Date())
 }
 
@@ -133,7 +134,7 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
             shape = ButtonDefaults.elevatedShape,
             colors = ButtonDefaults.elevatedButtonColors(),
             onClick = {
-                clickHandler(context, nowString, systolicValue, diastolicValue)
+                writeInfoToFile(context, nowString, systolicValue, diastolicValue)
                 isEnabled = !isEnabled
             }
         ) {
@@ -148,15 +149,9 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
     }
 }
 
-private fun clickHandler(context:Context, dateString:String, systolic:String, diastolic:String) {
-  //  Toast.makeText(context, "In clickHandler()", Toast.LENGTH_LONG).show()
-
-    writeInfoToFile(context, dateString, systolic, diastolic)
-}
-
 private fun writeInfoToFile(context: Context, dateString:String, systolic:String, diastolic:String) {
     val msg = "$dateString  $systolic/$diastolic\n"
-    val filename = "bpmeas4.txt"
+    val filename = "bpmeas.txt"
     try {
         val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val file = File(documentsDir, filename)
