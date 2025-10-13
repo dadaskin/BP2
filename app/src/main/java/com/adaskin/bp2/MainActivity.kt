@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -65,8 +64,8 @@ private fun getNow():String {
 
 @Composable
 fun MainScreen(name: String, modifier: Modifier = Modifier) {
-    var systolicValue by rememberSaveable { mutableStateOf("")}
-    var diastolicValue by rememberSaveable { mutableStateOf("")}
+    var systolicValue by remember { mutableStateOf("")}
+    var diastolicValue by remember { mutableStateOf("")}
     var isEnabled by remember {mutableStateOf(systolicValue.isNotEmpty() && diastolicValue.isNotEmpty())}
     val nowString = getNow()
     val context = LocalContext.current
