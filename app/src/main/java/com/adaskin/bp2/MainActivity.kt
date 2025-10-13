@@ -150,7 +150,7 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
 }
 
 private fun writeInfoToFile(context: Context, dateString:String, systolic:String, diastolic:String) {
-    val msg = "$dateString  $systolic/$diastolic\n"
+    var msg = "$dateString  $systolic/$diastolic\n"
     val filename = "bpmeas.txt"
     try {
         val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
@@ -161,6 +161,11 @@ private fun writeInfoToFile(context: Context, dateString:String, systolic:String
         file.appendText(msg, Charsets.UTF_8)
     } catch (e:Exception) {
         Log.i("Foo", "Some problem with file:\n" + e.message)
+        msg = if (e.message == null)  {
+            "No Exception message!"
+        }else {
+            e.message.toString()
+        }
     }
 
     Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
