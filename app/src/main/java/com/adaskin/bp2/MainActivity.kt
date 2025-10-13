@@ -157,15 +157,15 @@ private fun clickHandler(context:Context, dateString:String, systolic:String, di
 
 private fun writeInfoToFile(context: Context, dateString:String, systolic:String, diastolic:String) {
     val msg = "$dateString  $systolic/$diastolic\n"
-    val filename = "bpmeas3.txt"
+    val filename = "bpmeas4.txt"
     try {
         val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         Log.i("Foo", "Documents dir: $documentsDir")
         val cacheDir = context.cacheDir
         Log.i("Foo", "context.cacheDir is: " + cacheDir.name)
         // Puts file in /data/data/com.adaskin.bp2/cache .
-        val file = File(cacheDir, filename)
-//        val file = File(documentsDir, filename)
+  //      val file = File(cacheDir, filename)
+        val file = File(documentsDir, filename)
         if (!file.exists()) {
             file.createNewFile()
         }
