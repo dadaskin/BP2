@@ -150,25 +150,55 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
 }
 
 private fun writeInfoToFile(context: Context, dateString:String, systolic:String, diastolic:String) {
-    var msg = "$dateString  $systolic/$diastolic\n"
+    val msg = "$dateString  $systolic/$diastolic\n"
     val filename = "bpmeas.txt"
+
+    var msg1 : String
     try {
-        val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val file = File(documentsDir, filename)
-        if (!file.exists()) {
-            file.createNewFile()
+        val file1 = File(context.cacheDir, filename)
+        if (!file1.exists()) {
+            file1.createNewFile()
         }
-        file.appendText(msg, Charsets.UTF_8)
-    } catch (e:Exception) {
-        Log.i("Foo", "Some problem with file:\n" + e.message)
-        msg = if (e.message == null)  {
+        file1.appendText(msg, Charsets.UTF_8)
+        msg1 = "C: " + msg
+    }  catch (e:Exception) {
+        Log.i("Foo", "Some problem with Cache file:\n" +  e.message)
+        msg1 = if (e.message == null)  {
             "No Exception message!"
         }else {
             e.message.toString()
         }
     }
+    Toast.makeText(context, msg1, Toast.LENGTH_LONG).show()
 
-    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+    var msg2 : String
+    try {
+        val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val file2 = File(documentsDir, filename)
+        file2.createNewFile()
+        if (file2.exists()){
+            Log.i("Foo", "$filename exits.  CanWrite(): ${file2.canWrite()}")
+        } else {
+            Log.i("Foo", "$filename not there.")
+        }
+
+        file2.appendText(msg, Charsets.UTF_8)
+        msg2 = "D: " + msg
+    } catch (e:Exception) {
+        Log.i("Foo", "Some problem with Documents file:\n" + e.message)
+        msg2 = if (e.message == null)  {
+            "No Exception message!"
+        }else {
+            e.message.toString()
+        }
+    }
+    Toast.makeText(context, msg2, Toast.LENGTH_LONG).show()
+
+
+
+
+
+//     saveToDocuments(filename, msg)
 }
 
 @Preview(showBackground = true)
