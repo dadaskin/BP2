@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BP2Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.run { fillMaxSize() }) { innerPadding ->
                     MainScreen(
                         name = "Blood Pressure",
                         modifier = Modifier.padding(innerPadding)
@@ -82,12 +83,8 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center
         )
-        Text (
-            text = nowString,
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            textAlign = TextAlign.Center
-        )
-        Row{
+        Row (modifier = Modifier.align(Alignment.CenterHorizontally))
+        {
             TextField(
                 value = systolicValue,
                 onValueChange = {
@@ -127,10 +124,9 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
                 },
             )
         }
-        // Style the button
         ElevatedButton(
             enabled = isEnabled,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 25.dp),
             shape = ButtonDefaults.elevatedShape,
             colors = ButtonDefaults.elevatedButtonColors(),
             onClick = {
@@ -146,30 +142,56 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center
             )
         }
+        ElevatedButton(
+            enabled = true,
+            modifier = Modifier.padding(top = 400.dp).align(Alignment.CenterHorizontally),
+            shape = ButtonDefaults.elevatedShape,
+            colors = ButtonDefaults.elevatedButtonColors(),
+            onClick = {truncateFile(context)}
+        )
+        {
+            Text(
+                text = "Truncate",
+                modifier = Modifier.width(200.dp),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
-private fun writeInfoToFile(context: Context, dateString:String, systolic:String, diastolic:String) {
-    val msg = "$dateString  $systolic/$diastolic\n"
+private fun truncateFile(context:Context) {
+    val msg = "New start!!\n"
     val filename = "bpmeas.txt"
 
-    var msg1 : String
+    var msg2 : String
     try {
-        val file1 = File(context.cacheDir, filename)
-        if (!file1.exists()) {
-            file1.createNewFile()
+        val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val file2 = File(documentsDir, filename)
+        file2.createNewFile()
+        if (file2.exists()){
+            Log.i("Foo", "$filename exits.  CanWrite(): ${file2.canWrite()}")
+        } else {
+            Log.i("Foo", "$filename not there.")
         }
-        file1.appendText(msg, Charsets.UTF_8)
-        msg1 = "C: " + msg
-    }  catch (e:Exception) {
-        Log.i("Foo", "Some problem with Cache file:\n" +  e.message)
-        msg1 = if (e.message == null)  {
+
+        file2.writeText(msg, Charsets.UTF_8)    // writeText() rather than appendText()
+        msg2 = "D: $msg"
+    } catch (e:Exception) {
+        Log.i("Foo", "Some problem truncating Documents file:\n" + e.message)
+        msg2 = if (e.message == null)  {
             "No Exception message!"
         }else {
             e.message.toString()
         }
     }
-    Toast.makeText(context, msg1, Toast.LENGTH_LONG).show()
+    Toast.makeText(context, msg2, Toast.LENGTH_LONG).show()
+}
+
+private fun writeInfoToFile(context: Context, dateString:String, systolic:String, diastolic:String) {
+    val msg = "$dateString  $systolic/$diastolic\n"
+    val filename = "bpmeas.txt"
 
     var msg2 : String
     try {
@@ -183,9 +205,9 @@ private fun writeInfoToFile(context: Context, dateString:String, systolic:String
         }
 
         file2.appendText(msg, Charsets.UTF_8)
-        msg2 = "D: " + msg
+        msg2 = "D: $msg"
     } catch (e:Exception) {
-        Log.i("Foo", "Some problem with Documents file:\n" + e.message)
+        Log.i("Foo", "Some problem appending to Documents file:\n" + e.message)
         msg2 = if (e.message == null)  {
             "No Exception message!"
         }else {
@@ -193,12 +215,6 @@ private fun writeInfoToFile(context: Context, dateString:String, systolic:String
         }
     }
     Toast.makeText(context, msg2, Toast.LENGTH_LONG).show()
-
-
-
-
-
-//     saveToDocuments(filename, msg)
 }
 
 @Preview(showBackground = true)
