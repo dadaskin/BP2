@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -46,7 +45,26 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BP2Theme {
-                Scaffold(modifier = Modifier.run { fillMaxSize() }) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.run { fillMaxSize() },
+                    bottomBar = {
+                        ElevatedButton(
+                            enabled = true,
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            shape = ButtonDefaults.elevatedShape,
+                            colors = ButtonDefaults.elevatedButtonColors(),
+                            onClick = {truncateFile()}
+                        ){
+                            Text(
+                                text = "Truncate",
+                                modifier = Modifier.width(200.dp),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                    ) { innerPadding ->
                     MainScreen(
                         name = "Blood Pressure",
                         modifier = Modifier.padding(innerPadding)
@@ -142,79 +160,36 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center
             )
         }
-        ElevatedButton(
-            enabled = true,
-            modifier = Modifier.padding(top = 400.dp).align(Alignment.CenterHorizontally),
-            shape = ButtonDefaults.elevatedShape,
-            colors = ButtonDefaults.elevatedButtonColors(),
-            onClick = {truncateFile(context)}
-        )
-        {
-            Text(
-                text = "Truncate",
-                modifier = Modifier.width(200.dp),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-        }
     }
 }
 
-private fun truncateFile(context:Context) {
+
+private fun truncateFile() {
     val msg = "New start!!\n"
     val filename = "bpmeas.txt"
 
-    var msg2 : String
     try {
         val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val file2 = File(documentsDir, filename)
         file2.createNewFile()
-        if (file2.exists()){
-            Log.i("Foo", "$filename exits.  CanWrite(): ${file2.canWrite()}")
-        } else {
-            Log.i("Foo", "$filename not there.")
-        }
-
         file2.writeText(msg, Charsets.UTF_8)    // writeText() rather than appendText()
-        msg2 = "D: $msg"
     } catch (e:Exception) {
         Log.i("Foo", "Some problem truncating Documents file:\n" + e.message)
-        msg2 = if (e.message == null)  {
-            "No Exception message!"
-        }else {
-            e.message.toString()
-        }
     }
-    Toast.makeText(context, msg2, Toast.LENGTH_LONG).show()
 }
 
 private fun writeInfoToFile(context: Context, dateString:String, systolic:String, diastolic:String) {
     val msg = "$dateString  $systolic/$diastolic\n"
     val filename = "bpmeas.txt"
 
-    var msg2 : String
     try {
         val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val file2 = File(documentsDir, filename)
         file2.createNewFile()
-        if (file2.exists()){
-            Log.i("Foo", "$filename exits.  CanWrite(): ${file2.canWrite()}")
-        } else {
-            Log.i("Foo", "$filename not there.")
-        }
-
         file2.appendText(msg, Charsets.UTF_8)
-        msg2 = "D: $msg"
     } catch (e:Exception) {
         Log.i("Foo", "Some problem appending to Documents file:\n" + e.message)
-        msg2 = if (e.message == null)  {
-            "No Exception message!"
-        }else {
-            e.message.toString()
-        }
     }
-    Toast.makeText(context, msg2, Toast.LENGTH_LONG).show()
 }
 
 @Preview(showBackground = true)
